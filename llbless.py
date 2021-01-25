@@ -8,11 +8,14 @@ parser.add_argument('player_list', type=argparse.FileType('r'),
 
 args = parser.parse_args()
 
+def make_player(player_name):
+    player_base = Player.make_random(name=player_name,seed=player_name)
+    return player_base.simulated_copy(buffs={'overall_rating': (player_base.total_fingers - 10) * .01})
+
 player_names = args.player_list.read().split('\n')
 if player_names[-1] == '':
     player_names.pop()
-players_base = [Player.make_random(name=x,seed=x) for x in player_names]
-players = [player.simulated_copy(buffs={'overall_rating': (player.total_fingers - 10) * .01}) for player in players_base]
+players = [make_player(x) for x in player_names]
 
 def format_stars(star_count):
     result = ''
@@ -27,7 +30,7 @@ def compute_blessing_effects(title, blessing_function):
     print('\nPlayer             Batting     Baserunning     Defense       Pitching\n')
     for player in players:
         blessed_player_name = blessing_function(player.name)
-        blessed_player = Player.make_random(name=blessed_player_name, seed=blessed_player_name)
+        blessed_player = make_player(blessed_player_name)
         print('{:15}  {:5} ({:+.1f})  {:5} ({:+.1f})  {:5} ({:+.1f})  {:5} ({:+.1f})'.format(blessed_player_name[0:15],
         format_stars(blessed_player.batting_stars), blessed_player.batting_stars - player.batting_stars,
         format_stars(blessed_player.baserunning_stars), blessed_player.baserunning_stars - player.baserunning_stars,
