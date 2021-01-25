@@ -7,6 +7,8 @@ parser.add_argument('player_list', type=argparse.FileType('r', encoding='utf_8')
                     help='File with a list of player names')
 parser.add_argument('out', type=argparse.FileType('w', encoding='utf_8'),
                     help='Output file')
+parser.add_argument('--emoji', '-e', help="Emoji for Enamel Pins blessing")
+parser.add_argument('--rebirth', '-r', help="Prefix/suffix for Rebirth blessing")
 
 args = parser.parse_args()
 
@@ -61,5 +63,17 @@ compute_blessing_effects('The Lady Doth Protest Too Much Methinks', lambda name:
 compute_blessing_effects('Mega Evolution ("Mega")', lambda name: 'Mega' + name)
 compute_blessing_effects('Mega Evolution ("Mega ")', lambda name: 'Mega ' + name)
 compute_blessing_effects('Grand Entrance', lambda name: 'The ' + name)
+
+if (args.emoji):
+    compute_blessing_effects('Enamel Pins ("{}" prefix)'.format(args.emoji), lambda name: args.emoji + name)
+    compute_blessing_effects('Enamel Pins ("{} " prefix)'.format(args.emoji), lambda name: args.emoji + ' ' + name)
+    compute_blessing_effects('Enamel Pins ("{}" postfix)'.format(args.emoji), lambda name: name + args.emoji)
+    compute_blessing_effects('Enamel Pins (" {}" postfix)'.format(args.emoji), lambda name: name + ' ' + args.emoji)
+
+if (args.rebirth):
+    compute_blessing_effects('Rebirth ("{}" prefix)'.format(args.rebirth), lambda name: args.rebirth + name)
+    compute_blessing_effects('Rebirth ("{} " prefix)'.format(args.rebirth), lambda name: args.rebirth + ' ' + name)
+    compute_blessing_effects('Rebirth ("{}" postfix)'.format(args.rebirth), lambda name: name + args.rebirth)
+    compute_blessing_effects('Rebirth (" {}" postfix)'.format(args.rebirth), lambda name: name + ' ' + args.rebirth)
 
 args.out.close()
