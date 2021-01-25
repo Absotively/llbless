@@ -2,9 +2,11 @@ from blaseball_mike.models import Player
 import argparse
 import math
 
-parser = argparse.ArgumentParser(description='Compute simsim blessing effects')
-parser.add_argument('player_list', type=argparse.FileType('r'),
+parser = argparse.ArgumentParser(description='Compute simsim blessing effects. Pass - as the player list to read from stdin, or as the output file to read from stdout.')
+parser.add_argument('player_list', type=argparse.FileType('r', encoding='utf_8'),
                     help='File with a list of player names')
+parser.add_argument('out', type=argparse.FileType('w', encoding='utf_8'),
+                    help='Output file')
 
 args = parser.parse_args()
 
@@ -26,18 +28,18 @@ def format_stars(star_count):
     return result
 
 def compute_blessing_effects(title, blessing_function):
-    print('{:*^71}'.format(' ' + title + ' '))
-    print('\nPlayer             Batting     Baserunning     Defense       Pitching\n')
+    args.out.write('{:*^71}\n\n'.format(' ' + title + ' '))
+    args.out.write('Player             Batting     Baserunning     Defense       Pitching\n\n')
     for player in players:
         blessed_player_name = blessing_function(player.name)
         blessed_player = make_player(blessed_player_name)
-        print('{:15}  {:5} ({:+.1f})  {:5} ({:+.1f})  {:5} ({:+.1f})  {:5} ({:+.1f})'.format(blessed_player_name[0:15],
+        args.out.write('{:15}  {:5} ({:+.1f})  {:5} ({:+.1f})  {:5} ({:+.1f})  {:5} ({:+.1f})\n'.format(blessed_player_name[0:15],
         format_stars(blessed_player.batting_stars), blessed_player.batting_stars - player.batting_stars,
         format_stars(blessed_player.baserunning_stars), blessed_player.baserunning_stars - player.baserunning_stars,
         format_stars(blessed_player.defense_stars), blessed_player.defense_stars - player.defense_stars,
         format_stars(blessed_player.pitching_stars), blessed_player.pitching_stars - player.pitching_stars
         ))
-    print('\n')
+    args.out.write('\n\n')
 
 def reflect_name(name):
     words = name.split(' ')
@@ -54,3 +56,5 @@ compute_blessing_effects('This Is A Library', lambda name: name.lower())
 compute_blessing_effects('The Lady Doth Protest Too Much Methinks', lambda name: '(definitely not) ' + name)
 compute_blessing_effects('Mega Evolution', lambda name: 'Mega' + name)
 compute_blessing_effects('Grand Entrance', lambda name: 'The ' + name)
+
+args.out.close()
