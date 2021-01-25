@@ -43,7 +43,7 @@ def compute_blessing_effects(title, blessing_function):
 
 def reflect_name(name):
     words = name.split(' ')
-    words.reverse()
+    words = [word[::-1] for word in words]
     return ' '.join(words)
 
 compute_blessing_effects('Man In The Mirror', reflect_name)
