@@ -11,7 +11,8 @@ args = parser.parse_args()
 player_names = args.player_list.read().split('\n')
 if player_names[-1] == '':
     player_names.pop()
-players = [Player.make_random(name=x,seed=x) for x in player_names]
+players_base = [Player.make_random(name=x,seed=x) for x in player_names]
+players = [player.simulated_copy(buffs={'overall_rating': (player.total_fingers - 10) * .01}) for player in players_base]
 
 def format_stars(star_count):
     result = ''
